@@ -3,7 +3,7 @@ import itertools
 
 
 def main():
-    with open('input_day01.txt', 'r') as file:
+    with open('input.txt', 'r') as file:
         input_list = [int(line) for line in file]
     print('part 1:', part1(input_list))
     print('part 2:', part2(input_list))
