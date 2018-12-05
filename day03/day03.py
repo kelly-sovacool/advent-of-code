@@ -24,6 +24,7 @@ class Claim:
 
 
 def get_claim_counts(claims):
+    # TODO: instead of keeping set of all coords, only needs to include vertices of polygon
     fabric_claim_counts = collections.defaultdict(int)
     for claim in claims:
         for coord in claim.coords:
