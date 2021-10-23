@@ -1,6 +1,4 @@
 #!/usr/local/bin/python3
-from itertools import cycle
-
 
 def main():
     with open('input.txt', 'r') as infile:
