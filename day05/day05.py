@@ -6,21 +6,7 @@ def main():
     with open('input.txt', 'r') as infile:
         polymer_input = next(infile).strip()
     print('Part1', part1(polymer_input))
-
-
-# TO-DO: implement recursive solution
-def part1_TODO(polymer_input):
-    indices = list(list())
-    for index, char in polymer_input[1:]:
-        prev_index = index-1
-        prev_char = polymer_input[prev_index]
-        if is_opposite(char, prev_char) and prev_index not in indices[-1]:
-            if indices[-1][-1] == prev_index-1:
-                indices[-1].extend([index, prev_index])
-            else:
-                indices.append([index, prev_index])
-    for stretch in indices:
-        pass
+    print('Part2', part2(polymer_input))
 
 
 def part1(polymer_input):  # this is inefficient
@@ -28,7 +14,6 @@ def part1(polymer_input):  # this is inefficient
     index = 1
     len_polymer = len(polymer)
     while index < len_polymer:
-        print(index)
         if index > 0 and is_opposite(polymer[index], polymer[index-1]):
             polymer.pop(index)
             polymer.pop(index-1)
@@ -36,7 +21,18 @@ def part1(polymer_input):  # this is inefficient
             len_polymer = len(polymer)
         else:
             index += 1
-    return ''.join(polymer)
+    return len(polymer)
+
+
+def part2(polymer_input):
+    monomers = {char.lower() for char in polymer_input}
+    polymers = {char: part1(strip_char(polymer_input, char)) for char in monomers}
+    min_char = min(polymers, key = lambda x: polymers[x])
+    return polymers[min_char]
+
+
+def strip_char(polymer, badchar):
+    return ''.join(char for char in polymer if not is_opposite(char, badchar) and char != badchar)
 
 
 def is_opposite(char1, char2):
