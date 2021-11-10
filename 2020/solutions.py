@@ -1,5 +1,6 @@
 import itertools
 import math
+import pprint
 
 
 def day_01():
@@ -55,8 +56,77 @@ class Password:
         return n_chars == 1
 
 
+def day_03(infilename = '2020/input/2020-03.txt'):
+    grid = Grid.from_file(infilename)
+    print(f'grid dimensions: x={grid.xlen} y={grid.ylen}')
+    
+    right = 3
+    down = 1
+    tob = Toboggan(right, down)
+    print('part 1 trees: ', tob.count_trees(grid))
+
+    toboggans = [Toboggan(x,y) for x,y in [(1,1), (3,1), (5,1), (7,1), (1,2)]]
+    n_trees = [tob.count_trees(grid) for tob in toboggans]
+    print('part 2 trees multiplied: ', math.prod(n_trees))
+
+
+class Grid(list):
+
+    def __init__(self, things):
+        super().__init__(things)
+
+    @classmethod
+    def from_file(cls, filename):
+        with open(filename, 'r') as infile:
+            grid = cls([line.strip() for line in infile])
+        return grid
+
+    @property
+    def ylen(self):
+        return len(self)
+    
+    @property
+    def xlen(self):
+        return len(self[0])
+
+    def xpos(self, x):
+        return x % self.xlen
+
+    def get_loc(self, x, y):
+        return self[y][self.xpos(x)]
+
+
+class Toboggan:
+    
+    def __init__(self, right, down):
+        self.xpos = 0
+        self.ypos = 0
+        self.right = right
+        self.down = down
+
+    def __repr__(self):
+        return f"Tob(s({self.right},{self.down})@[{self.xpos},{self.ypos}])"
+
+    def move(self):
+        self.xpos += self.right
+        self.ypos += self.down
+
+    def get_loc(self, grid):
+        if self.ypos >= grid.ylen:
+            raise ValueError(f"The toboggan is at the bottom of the hill ({self.xpos}, {self.ypos})")
+        return grid.get_loc(self.xpos, self.ypos)
+
+    def count_trees(self, grid, tree = '#'):
+        n_trees = 0
+        self.move()
+        while self.ypos < grid.ylen:
+            n_trees += self.get_loc(grid) == tree
+            self.move()
+        return n_trees
+
+
 def main():
-    day_02()
+    day_03('input/2020-03.txt')
 
 
 if __name__ == "__main__":
