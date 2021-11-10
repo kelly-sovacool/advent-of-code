@@ -65,8 +65,8 @@ def day_03(infilename = '2020/input/2020-03.txt'):
     tob = Toboggan(right, down)
     print('part 1 trees: ', tob.count_trees(grid))
 
-    toboggans = [Toboggan(x,y) for x,y in [(1,1), (3,1), (5,1), (7,1), (1,2)]]
-    n_trees = [tob.count_trees(grid) for tob in toboggans]
+    slopes = [(1,1), (3,1), (5,1), (7,1), (1,2)]
+    n_trees = [Toboggan(x,y).count_trees(grid) for x,y in slopes]
     print('part 2 trees multiplied: ', math.prod(n_trees))
 
 
@@ -125,8 +125,61 @@ class Toboggan:
         return n_trees
 
 
+def day_04(infilename = '2020/input/2020-04.txt'):
+    passports = []
+    curr_idx = 0
+    with open(infilename, 'r') as infile:
+        for line in infile:
+            line = line.strip()
+            if len(line) == 0:
+                curr_idx += 1
+            else:
+                if len(passports) <= curr_idx:
+                    passports.append(Passport())
+                for field in line.split():
+                    k,v = field.split(':')
+                    passports[curr_idx][k] = v
+    print('part 1:', sum(p.is_valid_p1 for p in passports))
+    print('part 2:', sum(p.is_valid_p2 for p in passports))
+
+
+def is_valid_height(x):
+    if x[:-2].isnumeric():
+        number = float(x[:-2])
+        units = x[-2:]    
+        if units == 'cm':
+            is_valid = number >= 150 and number <= 193
+        elif units == 'in':
+            is_valid = number >= 59 and number <= 76
+        else:
+            is_valid = False
+    else:
+        is_valid = False
+    return is_valid
+
+class Passport(dict):
+    FIELDS = {'byr': lambda x: x.isnumeric() and int(x) >= 1920 and int(x) <= 2002 and len(str(x)) == 4, 
+              'iyr': lambda x: x.isnumeric() and int(x) >= 2010 and int(x) <= 2020 and len(str(x)) == 4, 
+              'eyr': lambda x: x.isnumeric() and int(x) >= 2020 and int(x) <= 2030 and len(str(x)) == 4, 
+              'hgt': is_valid_height, 
+              'hcl': lambda x: len(x) == 7 and x[0] == '#' and x[1:].isalnum(), 
+              'ecl': lambda x: x in set('amb blu brn gry grn hzl oth'.split()), 
+              'pid': lambda x: x.isnumeric() and len(x) == 9}
+    
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def is_valid_p1(self):
+        return all(field in self.keys() for field in Passport.FIELDS.keys())
+
+    @property
+    def is_valid_p2(self):
+        return self.is_valid_p1 and all(Passport.FIELDS[k](v) for k, v in self.items() if k != 'cid')
+
+
 def main():
-    day_03('input/2020-03.txt')
+    day_04('input/2020-04.txt')
 
 
 if __name__ == "__main__":
