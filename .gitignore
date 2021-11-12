@@ -115,3 +115,7 @@ venv.bak/
 
 # VS Code
 .vscode
+
+# Added by cargo
+
+/target
